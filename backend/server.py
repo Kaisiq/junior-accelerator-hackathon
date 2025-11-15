@@ -23,16 +23,26 @@ You are an architectural AI assistant. Your task is to translate a user's descri
 
 RULES:
 - You must only output a single JSON object. Do not include any other text, explanations, or markdown code fences.
-- You can only use the following shapes: "box", "sphere", "cylinder".
-- The JSON output MUST follow this structure: {"objects": [{"shape": "...", "position": {"x":0, "y":0, "z":0}, "size": {...}, "color": "#RRGGBB"}, ...]}
+- You can only use the following shapes: "box", "sphere", "cylinder", "hexagon", "cone", "torus", "octahedron", "dodecahedron", "icosahedron", "triangle".
+- The JSON output MUST follow this structure: {"objects": [{"shape": "...", "position": {"x":0, "y":0, "z":0}, "size": {...}, "color": "#RRGGBB", "details": [{"shape": "...", "position": {"x":0, "y":0, "z":0}, "size": {...}, "operation": "subtract"}]}, ...]}
 - For "box", the "size" property must be {"width": w, "height": h, "depth": d}.
 - For "sphere", the "size" property must be {"radius": r}.
 - For "cylinder", the "size" property must be {"radius": r, "height": h}.
+- For "hexagon", the "size" property must be {"radius": r, "height": h}.
+- For "cone", the "size" property must be {"radius": r, "height": h}.
+- For "torus", the "size" property must be {"radius": r, "tube": t}.
+- For "octahedron", the "size" property must be {"radius": r}.
+- For "dodecahedron", the "size" property must be {"radius": r}.
+- For "icosahedron", the "size" property must be {"radius": r}.
+- For "triangle", the "size" property must be {"radius": r, "height": h}.
+- The "details" property is an array of sub-objects that can be used to add or remove parts from the main shape. Use the "operation" property to specify "add", "subtract", or "intersect". For example, to create a window, you can subtract a small box from a larger box.
 - All coordinate and size values must be numbers.
 - The "color" must be a valid hex color string (e.g., "#FF0000").
 - Keep the total number of objects between 5 and 20.
 - The base of the building should be near the origin y=0.
-- Be creative and futuristic in your interpretation of the user's prompt.
+- Be creative and futuristic in your interpretation of the user's prompt. Add details like windows, doors, and other features to make the buildings more interesting.
+- The maximum output should not be more than 60000 tokens
+- return json as a string characters
 """
 
 # --- API Endpoints ---
@@ -59,7 +69,7 @@ def generate_building():
         if provider == "openai":
             model_name = "gpt-4o" # Or "gpt-3.5-turbo"
         elif provider == "gemini":
-            model_name = "gemini/gemini-2.5-flash-lite"
+            model_name = "gemini/gemini-2.5-flash"
         else:
             return jsonify({"error": f"Unsupported provider: {provider}"}), 400
 
@@ -73,12 +83,17 @@ def generate_building():
             model=model_name,
             messages=messages,
             temperature=0.8,
-            max_tokens=2000,
+            max_tokens=64000,
             response_format={"type": "json_object"} # Use JSON mode if available
         )
 
         # The response object from litellm is consistent across providers
         llm_response_text = response.choices[0].message.content
+
+
+        # Validate that the response is not empty
+        if not llm_response_text:
+            return jsonify({"error": "LLM provider returned an empty response."}), 500
 
         # Validate and return the JSON
         building_json = json.loads(llm_response_text)

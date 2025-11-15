@@ -17,7 +17,6 @@ function init() {
     // Scene
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x1a1a1a);
-    scene.fog = new THREE.Fog(0x1a1a1a, 50, 200);
     scene.add(buildingGroup);
 
     // Camera
@@ -127,6 +126,27 @@ function renderBuilding(data) {
                 break;
             case 'cylinder':
                 geometry = new THREE.CylinderGeometry(obj.size.radius, obj.size.radius, obj.size.height, 32);
+                break;
+            case 'hexagon':
+                geometry = new THREE.CylinderGeometry(obj.size.radius, obj.size.radius, obj.size.height, 6);
+                break;
+            case 'cone':
+                geometry = new THREE.ConeGeometry(obj.size.radius, obj.size.height, 32);
+                break;
+            case 'torus':
+                geometry = new THREE.TorusGeometry(obj.size.radius, obj.size.tube, 16, 100);
+                break;
+            case 'octahedron':
+                geometry = new THREE.OctahedronGeometry(obj.size.radius);
+                break;
+            case 'dodecahedron':
+                geometry = new THREE.DodecahedronGeometry(obj.size.radius);
+                break;
+            case 'icosahedron':
+                geometry = new THREE.IcosahedronGeometry(obj.size.radius);
+                break;
+            case 'triangle':
+                geometry = new THREE.CylinderGeometry(obj.size.radius, obj.size.radius, obj.size.height, 3);
                 break;
             default:
                 console.warn(`Unknown shape: ${obj.shape}`);
