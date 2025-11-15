@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Building Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="scene-container">
+        <canvas id="render-canvas"></canvas>
+    </div>
+
+    <div id="ui-container">
+        <h1>AI Building Generator</h1>
+        <p>Describe a building from the future. Be creative!</p>
+        <div class="input-group">
+            <input type="text" id="building-prompt" placeholder="e.g., a tall, spiraling tower with glowing blue lines">
+            <button id="generate-btn">Generate</button>
+        </div>
+        <div id="loader" class="hidden">
+            <div class="spinner"></div>
+            <p>Generating your vision...</p>
+        </div>
+        <div id="error-message" class="hidden"></div>
+    </div>
+
+    <!-- 
+        Import Map: This tells the browser how to resolve "bare" module specifiers
+        like "three" to a full URL. This is the modern way to handle JS modules
+        without a build step.
+    -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js",
+            "three/examples/jsm/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/controls/OrbitControls.js"
+        }
+    }
+    </script>
+    
+    <!-- Our custom application logic -->
+    <script type="module" src="main.js"></script>
+</body>
+</html>

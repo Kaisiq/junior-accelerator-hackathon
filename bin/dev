@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+echo "--- Setting up Python Virtual Environment ---"
+if [ ! -d ".venv" ]; then
+    echo "Creating virtual environment..."
+    python3 -m venv .venv
+fi
+
+echo "Activating virtual environment..."
+source .venv/bin/activate
+
+echo "--- Installing Backend Dependencies ---"
+pip install -r backend/requirements.txt
+
+echo "--- Starting Backend Server ---"
+echo "Access the frontend at: http://127.00.1:5001"
+echo "Press Ctrl+C to stop the server."
+
+# Start the Flask server in the foreground
+python backend/server.py
