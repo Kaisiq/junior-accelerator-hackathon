@@ -114,39 +114,16 @@ function renderBuilding(data) {
         const material = new THREE.MeshStandardMaterial({ 
             color: color,
             roughness: 0.5,
-            metalness: 0.3 
+            metalness: 0.3,
+            side: THREE.DoubleSide // Render both sides of the triangle
         });
 
         switch (obj.shape) {
-            case 'box':
-                geometry = new THREE.BoxGeometry(obj.size.width, obj.size.height, obj.size.depth);
-                break;
-            case 'sphere':
-                geometry = new THREE.SphereGeometry(obj.size.radius, 32, 32);
-                break;
-            case 'cylinder':
-                geometry = new THREE.CylinderGeometry(obj.size.radius, obj.size.radius, obj.size.height, 32);
-                break;
-            case 'hexagon':
-                geometry = new THREE.CylinderGeometry(obj.size.radius, obj.size.radius, obj.size.height, 6);
-                break;
-            case 'cone':
-                geometry = new THREE.ConeGeometry(obj.size.radius, obj.size.height, 32);
-                break;
-            case 'torus':
-                geometry = new THREE.TorusGeometry(obj.size.radius, obj.size.tube, 16, 100);
-                break;
-            case 'octahedron':
-                geometry = new THREE.OctahedronGeometry(obj.size.radius);
-                break;
-            case 'dodecahedron':
-                geometry = new THREE.DodecahedronGeometry(obj.size.radius);
-                break;
-            case 'icosahedron':
-                geometry = new THREE.IcosahedronGeometry(obj.size.radius);
-                break;
             case 'triangle':
-                geometry = new THREE.CylinderGeometry(obj.size.radius, obj.size.radius, obj.size.height, 3);
+                geometry = new THREE.BufferGeometry();
+                const vertices = new Float32Array(obj.vertices.flatMap(v => [v.x, v.y, v.z]));
+                geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+                geometry.computeVertexNormals(); // For correct lighting
                 break;
             default:
                 console.warn(`Unknown shape: ${obj.shape}`);
@@ -154,7 +131,6 @@ function renderBuilding(data) {
         }
 
         const mesh = new THREE.Mesh(geometry, material);
-        mesh.position.set(obj.position.x, obj.position.y, obj.position.z);
         mesh.castShadow = true;
         mesh.receiveShadow = true;
         buildingGroup.add(mesh);
